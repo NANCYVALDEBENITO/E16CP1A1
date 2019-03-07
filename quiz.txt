@@ -1,0 +1,57 @@
+#open psql
+psql
+
+#create database
+CREATE DATABASE call_list
+\c call_list
+
+#create table
+CREATE TABLE users(id serial primary key, first_name varchar(64), email varchar(64)) 
+
+#open table
+SELECT * FROM users;
+
+#insert column
+INSERT INTO users(first_name,email) VALUES('Carlos','carlos_v@gmail.com');
+INSERT INTO users(first_name,email) VALUES('Laura','laura_v@gmail.com');
+
+#add new column
+ALTER TABLE users ADD COLUMN last_name varchar(30);
+
+#add last name into table
+UPDATE users SET last_name = 'Valenzuela' WHERE(id = 1);
+UPDATE users SET last_name = 'Molina' WHERE(id = 2);
+
+#create table calls
+CREATE TABLE calls(id SERIAL, phone varchar(64), date varchar(64), user_id SERIAL REFERENCES users(id), PRIMARY KEY (id));
+
+#review table
+SELECT * FROM calls;
+
+#add 6 calls to user Laura
+INSERT INTO calls(phone,date,user_id) VALUES('98994798','03-02-2019','1');
+INSERT INTO calls(phone,date,user_id) VALUES('98994798','03-02-2019','1');
+INSERT INTO calls(phone,date,user_id) VALUES('98994798','03-03-2019','1');
+INSERT INTO calls(phone,date,user_id) VALUES('98994798','23-04-2019','1');
+INSERT INTO calls(phone,date,user_id) VALUES('98994798','13-02-2019','1');
+INSERT INTO calls(phone,date,user_id) VALUES('98994798','12-01-2019','1');
+
+
+#add 4 calls to user Carlos
+INSERT INTO calls(phone,date,user_id) VALUES('98994798','03-03-2019','2');
+INSERT INTO calls(phone,date,user_id) VALUES('98994788','13-01-2019','1');
+INSERT INTO calls(phone,date,user_id) VALUES('98994788','12-01-2019','1');
+INSERT INTO calls(phone,date,user_id) VALUES('98994788','12-03-2019','1');
+
+#create new user
+INSERT INTO users(first_name,email,last_name) VALUES('Nancy','nancyvm@gmail.com','Valdebenito');
+
+#call
+SELECT first_name, count (calls)  FROM users FULL JOIN calls ON (calls.user_id = users.id) group by first_name ;
+#call user Carlos
+SELECT * FROM calls INNER JOIN users ON (users.first_name='Carlos') WHERE (calls.user_id = users.id) ORDER BY date ASC;
+#add new table
+CREATE TABLE audit (id SERIAL PRIMARY KEY, reason VARCHAR(64), user_id INTEGER REFERENCES users (id));
+
+
+
